@@ -14,7 +14,7 @@ funwrap.add({
 });
 
 
-var login = funwrap.it({
+var login = funwrap.decorate({
   validate: function(data, next) {
     if(data.username != "craig") return next(new Error("access denied!"));
     next();
