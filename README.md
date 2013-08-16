@@ -19,8 +19,9 @@ var login = funwrap.decorate({
     if(data.username != "craig") return next(new Error("access denied!"));
     next();
   },
-}, function(data, next) {
-  
+  then: function(data, next) {
+    //do something
+  }
 });
 
 
