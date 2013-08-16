@@ -5,9 +5,13 @@ Funwraps adds additional, custom behavior to your functions.
 var funwrap = require("funwrap")();
 
 funwrap.add({
-  map: function(options, data, next) {
-    options.validate(data, next);
-  },
+  create: function(options) {
+    return {
+      before: function(data, next) {
+        options.validate(data, next);
+      }
+    };
+  }
   test: function(options) {
     return options.validate;
   }
