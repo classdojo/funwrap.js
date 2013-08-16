@@ -1,0 +1,17 @@
+{
+  "name": "funwrap",
+  "version": "0.0.0",
+  "description": "funetti.js ==========",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/classdojo/funwrap.js.git"
+  },
+  "author": "",
+  "license": "n",
+  "readmeFilename": "README.md",
+  "gitHead": "2e37bdc4b532cdced10526eac6a0a849d13dcb2c"
+}
