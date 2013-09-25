@@ -39,15 +39,11 @@ class Mediator
 
   execute: (command, context, options, next) ->
 
-    return next(comerr.notFound("command '#{command}' not found.")) unless listener = @_listeners[command]
-
     args = Array.prototype.slice.call(arguments, 0)
 
     command   = args.shift()
     context   = if args.length is 3 then args.shift() else {}
     next      = if args.length is 2 then args.pop() else () ->
-    callbacks = listener.pre.concat(listener.callback).concat(listener.post)
-
 
     context.loading = true
 
@@ -64,7 +60,12 @@ class Mediator
 
     args.push onComplete
 
-    step.call request, args, callbacks
+
+    if listener = @_listeners[command]
+      callbacks = listener.pre.concat(listener.callback).concat(listener.post)
+      step.call request, args, callbacks
+    else
+      onComplete comerr.notFound("command '#{command}' not found.")
 
     request
 
