@@ -51,4 +51,16 @@ describe("mediator#", function() {
     });
   });
 
+
+  /**
+   */
+
+  it("can reference other commands", function(next) {
+    funwrap.mediator.on("login2", "login");
+    funwrap.decorate("login2")({ name: "craig" }, function(err, result) {
+      expect(result).to.be("success!!");
+      next();
+    })
+  })
+
 });

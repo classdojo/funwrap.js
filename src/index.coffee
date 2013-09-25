@@ -10,7 +10,7 @@ class Funwrap
     @_decorators = factories.any()
 
     # call mediator fn
-    @use @mediator = decor.mediator()
+    @use @mediator = decor.mediator @
     @use decor.fn()
     @use decor.stepper @
 

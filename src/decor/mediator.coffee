@@ -7,17 +7,20 @@ class Mediator
   ###
   ###
 
-  constructor: () ->
+  constructor: (@_funwrap) ->
     @_listeners = {}
 
   ###
   ###
 
-  on: (command, callback) ->
+  on: (command, callbacks...) ->
 
     commandInfo = command.split(" ")
     name        = commandInfo.pop()
     method      = commandInfo.shift()
+
+
+    callback = @_funwrap.decorate(callbacks...)
 
     unless listener = @_listeners[name]
       listener = @_listeners[name] = { pre: [], post: [] }
@@ -30,11 +33,15 @@ class Mediator
     else
       listener.callback = callback
 
+  ###
+  ###
+
+  execute: (command, options, next) -> @_execute command, options, next
 
   ###
   ###
 
-  execute: (command, context, options, next) ->
+  _execute: (command, context, options, next) ->
 
     return next(comerr.notFound("command '#{command}' not found.")) unless listener = @_listeners[command]
 
@@ -56,15 +63,17 @@ class Mediator
 
   create: (command) ->
     if (t = type(command)) is "string"
-      return (args...) => @execute [command, @].concat(args)...
+      return (args...) => @_execute [command, @].concat(args)...
     else
+
       commands = command
-      fns = []
-      self = @
+      fns      = []
+      self     = @
+
       for command of commands then do (command) ->
         context = commands[command]
         fns.push (args...) =>
-          self.execute [command, context].concat(args)...
+          self._execute [command, context].concat(args)...
 
       return (args...) =>
         step args, fns, args.concat().pop()
@@ -74,4 +83,4 @@ class Mediator
 
 
 
-module.exports = () -> new Mediator()
+module.exports = (funwrap) -> new Mediator funwrap
