@@ -18,7 +18,7 @@ mediator.on("login", function(options, next) {
 });
 
 
-var login = funwrap.step("login");
+var login = funwrap.decorate("login");
 
 login({ name: "craigers" }, function(err) {
   console.log(err.message); // access denied!
