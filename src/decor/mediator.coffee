@@ -54,7 +54,9 @@ class Mediator
 
       request.set "loading", false
       request.set "error", err
-      request.set "result", result ? !err
+
+      unless err
+        request.set "result", result ? true
 
       next arguments...
 
