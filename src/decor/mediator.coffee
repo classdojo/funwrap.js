@@ -49,8 +49,10 @@ class Mediator
     callbacks = listener.pre.concat(listener.callback).concat(listener.post)
 
 
+    context.loading = true
+
     # request object to be bound to
-    request = new bindable.Object({ loading: true })
+    request = new bindable.Object(context)
 
     onComplete = (err, result) ->
 
@@ -62,7 +64,7 @@ class Mediator
 
     args.push onComplete
 
-    step.call context, args, callbacks
+    step.call request, args, callbacks
 
     request
 

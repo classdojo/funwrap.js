@@ -41,8 +41,8 @@ describe("mediator#", function() {
 
   it("can can a command with options", function(next) {
     funwrap.mediator.on("validate", function(data, next) {
-      expect(this.name).to.be("string");
-      if(type(data.name) != this.name) {
+      expect(this.get("name")).to.be("string");
+      if(type(data.name) != this.get("name")) {
         return next(new Error("incorrect type"))
       }
       next(null, data);

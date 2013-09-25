@@ -7,7 +7,7 @@ class Funwrap
   ###
 
   constructor: () ->
-    @_decorators = factories.any()
+    @_decorators = factories.any []
 
     # call mediator fn
     @use @mediator = decor.mediator @
