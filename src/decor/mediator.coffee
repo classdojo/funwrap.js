@@ -36,19 +36,14 @@ class Mediator
   ###
   ###
 
-  execute: (command, options, next) -> @_execute command, options, next
-
-  ###
-  ###
-
-  _execute: (command, context, options, next) ->
+  execute: (command, context, options, next) ->
 
     return next(comerr.notFound("command '#{command}' not found.")) unless listener = @_listeners[command]
 
     args = Array.prototype.slice.call(arguments, 0)
 
     command   = args.shift()
-    context   = args.shift()
+    context   = args.shift() if args.length is 3
     callbacks = listener.pre.concat(listener.callback).concat(listener.post)
 
     step.call context, args, callbacks, next
@@ -63,7 +58,7 @@ class Mediator
 
   create: (command) ->
     if (t = type(command)) is "string"
-      return (args...) => @_execute [command, @].concat(args)...
+      return (args...) => @execute [command, @].concat(args)...
     else
 
       commands = command
@@ -73,7 +68,7 @@ class Mediator
       for command of commands then do (command) ->
         context = commands[command]
         fns.push (args...) =>
-          self._execute [command, context].concat(args)...
+          self.execute [command, context].concat(args)...
 
       return (args...) =>
         step args, fns, args.concat().pop()
