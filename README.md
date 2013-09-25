@@ -33,7 +33,7 @@ var funwrap = require("funwrap")(),
 mediator = funwrap.mediator();
 
 funwrap.use(mediator);
-mediator.on("saveProfile", funwrap.step(funwrap.memoize, function(options, next) {
+mediator.on("saveProfile", funwrap.decorate(funwrap.memoize, function(options, next) {
   
 }));
 ```
