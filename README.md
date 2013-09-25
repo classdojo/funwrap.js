@@ -33,9 +33,19 @@ var funwrap = require("funwrap")(),
 mediator = funwrap.mediator();
 
 funwrap.use(mediator);
-mediator.on("saveProfile", funwrap.decorate(funwrap.memoize, function(options, next) {
+mediator.on("getUser", funwrap.decorate(funwrap.memoize, function(options, next) {
   
 }));
+
+var getUser = funwrap.decorate("getUser");
+
+getUser({ name: "craig" }, function(err, data) {
+
+    //cache hit.
+    getUser({ name: "craig" }, function(err, data) {
+    
+    });
+});
 ```
 
 
