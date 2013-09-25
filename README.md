@@ -8,17 +8,28 @@ var funwrap = require("funwrap")(),
 mediator = funwrap.mediator();
 funwrap.use(mediator);
 
-mediator.on("validateLogin", function(options, next) {
-    if(!options.name) return next(new Error("not enough info!"));
+mediator.on("validate", function(options, next) {
+    for(var name in this.fields) {
+      var type = this.fields[name];
+      if(typeof options[name] != type) {
+        return next(new Error("incorrect type"));
+      }
+    }
     next();
 });
-mediator.on("pre login", "validateLogin");
+mediator.on("pre login", { 
+  validate: {
+    fields: {
+      name: "string"
+    }
+  }
+});
 mediator.on("login", function(options, next) {
   //do stuff!
 });
 
 
-var login = funwrap.step("login");
+var login = funwrap.decorate("login");
 
 login({ name: "craigers" }, function(err) {
   console.log(err.message); // access denied!
@@ -33,7 +44,7 @@ var funwrap = require("funwrap")(),
 mediator = funwrap.mediator();
 
 funwrap.use(mediator);
-mediator.on("saveProfile", funwrap.step(funwrap.memoize, function(options, next) {
+mediator.on("saveProfile", funwrap.decorate(funwrap.memoize, function(options, next) {
   
 }));
 ```

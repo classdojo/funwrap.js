@@ -13,44 +13,63 @@ class Mediator
   ###
   ###
 
-  on: (command, listener) ->
+  on: (command, callback) ->
 
-    unless listener = @_listeners[command]
-      listener = @_listeners[command] = { pre: [], post: [] }
+    commandInfo = command.split(" ")
+    name        = commandInfo.pop()
+    method      = commandInfo.shift()
 
-    if /^pre\s/.test(command)
-      listener.pre.push command
-    else if /^post\s/.test(command)
-      listener.post.push command
+    unless listener = @_listeners[name]
+      listener = @_listeners[name] = { pre: [], post: [] }
+
+
+    if method is "pre"
+      listener.pre.push callback
+    else if method is "post"
+      listener.post.push callback
     else
-      listener.callback = listener
+      listener.callback = callback
+
 
   ###
   ###
 
-  execute: (command, options, next) ->
+  execute: (command, context, options, next) ->
 
-    return comerr.notFound("command '#{command}' not found.") unless listener = @_listeners[command]
+    return next(comerr.notFound("command '#{command}' not found.")) unless listener = @_listeners[command]
 
     args = Array.prototype.slice.call(arguments, 0)
 
-    command = args.shift()
+    command   = args.shift()
+    context   = args.shift()
     callbacks = listener.pre.concat(listener.callback).concat(listener.post)
 
-    step args, callbacks, next
+    step.call context, args, callbacks, next
 
   ###
   ###
 
-  test: (command) -> 
-    type(command) is "string"
+  test: (command) -> /object|string/.test type(command)
 
   ###
   ###
 
   create: (command) ->
-    () =>
-      @execute [command].concat arguments
+    if (t = type(command)) is "string"
+      return (args...) => @execute [command, @].concat(args)...
+    else
+      commands = command
+      fns = []
+      self = @
+      for command of commands then do (command) ->
+        context = commands[command]
+        fns.push (args...) =>
+          self.execute [command, context].concat(args)...
+
+      return (args...) =>
+        step args, fns, args.concat().pop()
+
+
 
 
 
