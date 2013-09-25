@@ -1,6 +1,7 @@
 comerr  = require "comerr"
 type    = require "type-component"
 step    = require "../utils/step"
+bindable = require "bindable"
 
 class Mediator
 
@@ -43,10 +44,27 @@ class Mediator
     args = Array.prototype.slice.call(arguments, 0)
 
     command   = args.shift()
-    context   = args.shift() if args.length is 3
+    context   = if args.length is 3 then args.shift() else {}
+    next      = if args.length is 2 then args.pop() else () ->
     callbacks = listener.pre.concat(listener.callback).concat(listener.post)
 
-    step.call context, args, callbacks, next
+
+    # request object to be bound to
+    request = new bindable.Object({ loading: true })
+
+    onComplete = (err, result) ->
+
+      request.set "loading", false
+      request.set "error", err
+      request.set "result", result ? !err
+
+      next arguments...
+
+    args.push onComplete
+
+    step.call context, args, callbacks
+
+    request
 
   ###
   ###

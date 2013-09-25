@@ -5,8 +5,18 @@ type   = require("type-component");
 
 describe("mediator#", function() {
 
+  function timeout(count) {
+    return function() {
+      var args = Array.prototype.slice.call(arguments, 0),
+      next = args.pop();
+      setTimeout(function() {
+        next.apply(null,[null].concat(args));
+      }, count);
+    }
+  }
+
   it("can run a pre hooks", function(next) {
-    funwrap.mediator.on("pre login", function(options, next) {
+    funwrap.mediator.on("pre login", timeout(1), function(options, next) {
       if(options.name != "craig" && options.name != 0) return next(new Error("unauthorized"));
       next(null, options);
     });
@@ -61,6 +71,31 @@ describe("mediator#", function() {
       expect(result).to.be("success!!");
       next();
     })
+  });
+
+
+  /**
+   */
+
+  it("can bind to the request object returned and succeed", function(next) {
+    var request = funwrap.mediator.execute("login", { name: "craig" });
+    request.bind("result").to(function(){ next() }).now()
+  });
+
+  /**
+   */
+
+  it("can bind to the request object returned and fail", function(next) {
+    var request = funwrap.mediator.execute("login", { name: "baa" });
+    request.bind("error").to(function(){ next() }).now()
+  });
+
+  /**
+   */
+
+  it("can bind to the loading state", function(next) {
+    var request = funwrap.mediator.execute("login", { name: "baa" });
+    request.bind("loading").to(function(v){ if(!v) next() }).now()
   })
 
 });
