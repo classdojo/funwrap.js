@@ -1,6 +1,6 @@
 {
   "name": "funwrap",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "funetti.js ==========",
   "main": "./lib/index.js",
   "scripts": {
@@ -24,6 +24,7 @@
     "async": "~0.2.9",
     "outcome": "0.0.18",
     "type-component": "0.0.1",
-    "bindable": "~0.4.1"
+    "bindable": "~0.4.1",
+    "bindable-call": "0.0.x"
   }
 }

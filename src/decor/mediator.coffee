@@ -2,6 +2,7 @@ comerr  = require "comerr"
 type    = require "type-component"
 step    = require "../utils/step"
 bindable = require "bindable"
+bindableCall = require "bindable-call"
 
 class Mediator
 
@@ -47,27 +48,18 @@ class Mediator
 
     context.loading = true
 
-    # request object to be bound to
-    request = new bindable.Object(context)
+    request = bindableCall context, (next) =>
 
-    onComplete = (err, result) ->
+      args.push next
 
-      request.set "loading", false
-      request.set "error", err
+      if listener = @_listeners[command]
+        callbacks = listener.pre.concat(listener.callback).concat(listener.post)
+        step.call request, args, callbacks
+      else
+        next comerr.notFound("command '#{command}' not found.")
 
-      if not err or result?
-        request.set "result", result ? true
-
-      next arguments...
-
-    args.push onComplete
-
-
-    if listener = @_listeners[command]
-      callbacks = listener.pre.concat(listener.callback).concat(listener.post)
-      step.call request, args, callbacks
-    else
-      onComplete comerr.notFound("command '#{command}' not found.")
+    request.bind("response").once().to (response) ->
+      next response.error, response.data
 
     request
 
