@@ -53,7 +53,9 @@ class Mediator
       args.push next
 
       if listener = @_listeners[command]
-        callbacks = listener.pre.concat(listener.callback).concat(listener.post)
+
+
+        callbacks = listener.pre.concat(listener.callback or []).concat(listener.post)
         step.call request, args, callbacks
       else
         next comerr.notFound("command '#{command}' not found.")
