@@ -44,7 +44,7 @@ class Mediator
 
     command   = args.shift()
     context   = if args.length is 3 then args.shift() else {}
-    next      = if args.length is 2 then args.pop() else () ->
+    next      = if type(args[args.length-1]) is "function" then args.pop() else () ->
 
     context.loading = true
 
